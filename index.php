@@ -1,5 +1,6 @@
 <?php
     // put backend code before rendering html elements
+    session_start();
 
     // Connect to database
     // 1. database info 
@@ -59,62 +60,73 @@
     >
       <div class="card-body">
         <h3 class="card-title mb-3">My Todo List</h3>
-        <ul class="list-group">
-        <?php foreach ($tasks as $index => $task) { ?>
-            <li
-            class="list-group-item d-flex justify-content-between align-items-center"
+        <?php if (isset($_SESSION["user"])) : ?>
+          <ul class="list-group">
+          <?php foreach ($tasks as $index => $task) { ?>
+              <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+              >
+                  <div>
+                      <form method="POST" action="completed_task.php">
+                          <input type="hidden" name="task_id" value="<?= $task["id"]?>" />
+                          <input type="hidden" name="task_completed" value="<?= $task["completed"]?>" />
+
+                          <?php if ($task["completed"] === 0) { ?>
+                          <button class="btn btn-sm btn-light">
+                              <i class="bi bi-square"></i>
+                          </button>
+                          <span class="ms-2"><?= $task["label"]?></span>
+
+                          <?php } else { ?>
+                              <button class="btn btn-sm btn-success">
+                                  <i class="bi bi-check-square"></i>
+                              </button>
+                              <span class="ms-2 text-decoration-line-through"><?= $task["label"]?></span>
+                          <?php } ?>
+
+                      </form>
+                  </div>
+
+                  <div>
+                      <!-- delete button -->
+                      <form method="POST" action="delete_task.php">
+                          <input type="hidden" name="task_id" value="<?= $task["id"]?>" />
+                          <button class="btn btn-sm btn-danger">
+                              <i class="bi bi-trash"></i>
+                          </button>
+                      </form>
+                  </div>
+              </li>
+
+          <?php } ?>
+          </ul>
+          <div class="mt-4">
+            <form 
+            class="d-flex justify-content-between align-items-center"
+            method="POST"
+            action="add_task.php"
             >
-                <div>
-                    <form method="POST" action="completed_task.php">
-                        <input type="hidden" name="task_id" value="<?= $task["id"]?>" />
-                        <input type="hidden" name="task_completed" value="<?= $task["completed"]?>" />
-
-                        <?php if ($task["completed"] === 0) { ?>
-                        <button class="btn btn-sm btn-light">
-                            <i class="bi bi-square"></i>
-                        </button>
-                        <span class="ms-2"><?= $task["label"]?></span>
-
-                        <?php } else { ?>
-                            <button class="btn btn-sm btn-success">
-                                <i class="bi bi-check-square"></i>
-                            </button>
-                            <span class="ms-2 text-decoration-line-through"><?= $task["label"]?></span>
-                        <?php } ?>
-
-                    </form>
-                </div>
-
-                <div>
-                    <!-- delete button -->
-                    <form method="POST" action="delete_task.php">
-                        <input type="hidden" name="task_id" value="<?= $task["id"]?>" />
-                        <button class="btn btn-sm btn-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </form>
-                </div>
-            </li>
-
-        <?php } ?>
-        </ul>
-        <div class="mt-4">
-          <form 
-          class="d-flex justify-content-between align-items-center"
-          method="POST"
-          action="add_task.php"
-          >
-            <input
-              type="text"
-              class="form-control"
-              name="task_name"
-              placeholder="Add new item..."
-            />
-            <button class="btn btn-primary btn-sm rounded ms-2">Add</button>
-          </form>
+              <input
+                type="text"
+                class="form-control"
+                name="task_name"
+                placeholder="Add new item..."
+              />
+              <button class="btn btn-primary btn-sm rounded ms-2">Add</button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+      
+      <div>
+        <a href="logout.php" class="d-flex justify-content-center">Logout</a>
+      </div>
+    <?php else : ?>
+      <div class="d-flex gap-3">
+        <a href="login.php">Login</a>
+        <a href="signup.php">Sign up</a>
+      </div>
+    <?php endif; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
