@@ -1,15 +1,6 @@
 <?php 
 // connect to database 
-$host = "127.0.0.1";
-$database_name = "todolist";
-$database_user = "root";
-$database_password = "";
-
-$database = new PDO(
-    "mysql:host=$host;dbname=$database_name",
-    $database_user,
-    $database_password
-);
+$database = connectToDB();
 
 $task_id = $_POST["task_id"];
 
@@ -22,5 +13,5 @@ $task_id = $_POST["task_id"];
         "id" => $task_id
     ]);
 
-    header("Location: index.php");
+    header("Location: /");
     exit;

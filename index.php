@@ -1,133 +1,71 @@
 <?php
-    // put backend code before rendering html elements
-    session_start();
+// session start
+session_start();
 
-    // Connect to database
-    // 1. database info 
+// require the functions file
+    require "includes/functions.php";
+/*
+  decide what page to load depending on the url the user visit
+  
+  pages routes: 
+    localhost:9000/ -> home.php
+    localhost:9000/login -> login.php
+    localhost:9000/signup -> signup.php
+    localhost:9000/logout -> logout.php
 
-    $host = "127.0.0.1";
-    $database_name = "todolist";
-    $database_user = "root";
-    $database_password = "";
+  action routes: 
+    localhost:9000/auth/login -> includes/auth/do_login.php
+    localhost:9000/auth/signup -> includes/auth/do_signup.php
+    localhost:9000/task/add -> includes/task/add_task.php
+    localhost:9000/task/complete -> includes/task/completed_task.php
+    localhost:9000/task/delete -> includes/task/delete_task.php
 
-    // 2. connect PHP with the MySQL database
-    // PDO (PHP Database Object)
-    $database = new PDO(
-        "mysql:host=$host;dbname=$database_name",
-        $database_user,
-        $database_password
-    );
+  */
 
-    // var_dump($database);
+  // global variable 
+  // figure out what path the user is visiting
+  $path = $_SERVER["REQUEST_URI"];
+  // var_dump($path);
 
-    // 3. get the students data from the database
-    // 3.1 - SQL command (recipe) *the only thing that will change (the rest will stay the same)
-    $sql = "SELECT * FROM todos";
-    // 3.2 - prepare SQL query (prepare your material)
-    $query = $database->prepare($sql);
-    // 3.3 - execute the SQL query (cook it)
-    $query->execute();
-    // 3.4 - fetch all the results from the query (eat)
-    $tasks = $query->fetchAll();
+  // once you figure out the path, then we need to load relevant content based on the path 
+  // require is like load this page
+  switch ($path) {
+    // pages routes
+    case '/login':
+      require "pages/login.php";
+      break;
+    
+    case '/signup':
+      require "pages/signup.php";
+      break;
 
-    // var_dump($students);
-?>
+    case '/logout':
+      require "pages/logout.php";
+      break;
+    
+    default:
+      require "pages/home.php";
+      break;
+    
+    // action routes
+    case '/auth/login':
+      require "includes/auth/do_login.php";
+      break;
+    
+    case '/auth/signup':
+      require "includes/auth/do_signup.php";
+      break;
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>TODO App</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css"
-    />
-    <style type="text/css">
-      body {
-        background: #f1f1f1;
-      }
-    </style>
-  </head>
-  <body>
-    <div
-      class="card rounded shadow-sm"
-      style="max-width: 500px; margin: 60px auto;"
-    >
-      <div class="card-body">
-        <h3 class="card-title mb-3">My Todo List</h3>
-        <?php if (isset($_SESSION["user"])) : ?>
-          <ul class="list-group">
-          <?php foreach ($tasks as $index => $task) { ?>
-              <li
-              class="list-group-item d-flex justify-content-between align-items-center"
-              >
-                  <div>
-                      <form method="POST" action="completed_task.php">
-                          <input type="hidden" name="task_id" value="<?= $task["id"]?>" />
-                          <input type="hidden" name="task_completed" value="<?= $task["completed"]?>" />
+    case '/task/add':
+      require "includes/task/add_task.php";
+      break;
 
-                          <?php if ($task["completed"] === 0) { ?>
-                          <button class="btn btn-sm btn-light">
-                              <i class="bi bi-square"></i>
-                          </button>
-                          <span class="ms-2"><?= $task["label"]?></span>
+    case '/task/delete':
+      require "includes/task/delete_task.php";
+      break;
 
-                          <?php } else { ?>
-                              <button class="btn btn-sm btn-success">
-                                  <i class="bi bi-check-square"></i>
-                              </button>
-                              <span class="ms-2 text-decoration-line-through"><?= $task["label"]?></span>
-                          <?php } ?>
+    case '/task/complete':
+      require "includes/task/complete_task.php";
+      break;
 
-                      </form>
-                  </div>
-
-                  <div>
-                      <!-- delete button -->
-                      <form method="POST" action="delete_task.php">
-                          <input type="hidden" name="task_id" value="<?= $task["id"]?>" />
-                          <button class="btn btn-sm btn-danger">
-                              <i class="bi bi-trash"></i>
-                          </button>
-                      </form>
-                  </div>
-              </li>
-
-          <?php } ?>
-          </ul>
-          <div class="mt-4">
-            <form 
-            class="d-flex justify-content-between align-items-center"
-            method="POST"
-            action="add_task.php"
-            >
-              <input
-                type="text"
-                class="form-control"
-                name="task_name"
-                placeholder="Add new item..."
-              />
-              <button class="btn btn-primary btn-sm rounded ms-2">Add</button>
-            </form>
-          </div>
-        </div>
-      </div>
-      
-      <div>
-        <a href="logout.php" class="d-flex justify-content-center">Logout</a>
-      </div>
-    <?php else : ?>
-      <div class="d-flex gap-3">
-        <a href="login.php">Login</a>
-        <a href="signup.php">Sign up</a>
-      </div>
-    <?php endif; ?>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
-</html>
+  }

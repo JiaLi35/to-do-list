@@ -1,17 +1,6 @@
 <?php
-session_start();
-
 // connect to database 
-$host = "127.0.0.1";
-$database_name = "todolist";
-$database_user = "root";
-$database_password = "";
-
-$database = new PDO(
-    "mysql:host=$host;dbname=$database_name",
-    $database_user,
-    $database_password
-);
+$database = connectToDB();
 
 $email = $_POST["email"];
 $password = $_POST["password"];
@@ -39,7 +28,7 @@ if ( empty($email) || empty($password) ){
             // store user data in user session
             $_SESSION["user"] = $user;
 
-            header("Location: index.php");
+            header("Location: /");
             exit;
 
         } else {
